@@ -22,16 +22,15 @@ Go, Apache Kafka, Redis, PostgreSQL, Docker, AWS ECS
 
 ## Milestones
 
-| | Milestone |
-|---|---|
-| M1 | HTTP API server — accept, validate, and store trade orders |
-| M2 | Kafka producer — publish validated orders to Kafka topic |
-| M3 | Kafka consumer — process orders asynchronously, update status |
-| M4 | Redis caching — cache order state for fast lookups |
-| M5 | PostgreSQL persistence — persist all orders and execution results |
-| M6 | Docker Compose — run full stack locally |
-| M7 | AWS ECS deployment — deploy containerized service to AWS |
-
+| | Milestone | Status |
+|---|---|---|
+| M1 | HTTP API server — accept, validate, and store trade orders | 🔄 In Progress |
+| M2 | Kafka producer — publish validated orders to Kafka topic | ⬜ Not Started |
+| M3 | Kafka consumer — process orders asynchronously, update status | ⬜ Not Started |
+| M4 | Redis caching — cache order state for fast lookups | ⬜ Not Started |
+| M5 | PostgreSQL persistence — persist all orders and execution results | ⬜ Not Started |
+| M6 | Docker Compose — run full stack locally | ⬜ Not Started |
+| M7 | AWS ECS deployment — deploy containerized service to AWS | ⬜ Not Started |
 ## Order Flow
 
 A trade order moves through the following states:
