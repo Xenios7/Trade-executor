@@ -32,6 +32,7 @@ type OrderResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+
 func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 	var req PublishRequest
 
@@ -50,7 +51,29 @@ func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: time.Now().UTC(),
 	}
 
+	//Broker call
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(response)
 }
+
+func (h *Handler) GetAllOrdersHandler(w http.ResponseWriter, r *http.Request) {
+
+	//kafka producer call
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode([]OrderResponse{})
+}
+
+func (h *Handler) GetOrderHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "missing id", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(OrderResponse{})
+}
+
