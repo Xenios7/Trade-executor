@@ -25,7 +25,7 @@ Go, Apache Kafka, Redis, PostgreSQL, Docker, AWS ECS
 | | Milestone | Status |
 |---|---|---|
 | M1 | HTTP API server — accept, validate, and store trade orders | ✅ Complete |
-| M2 | Kafka producer — publish validated orders to Kafka topic | ⬜ Not Started |
+| M2 | Kafka producer — publish validated orders to Kafka topic | 🔄 In Progress |
 | M3 | Kafka consumer — process orders asynchronously, update status | ⬜ Not Started |
 | M4 | Redis caching — cache order state for fast lookups | ⬜ Not Started |
 | M5 | PostgreSQL persistence — persist all orders and execution results | ⬜ Not Started |
