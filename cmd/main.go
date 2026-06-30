@@ -5,10 +5,12 @@ import (
 	"net/http"
 
 	"github.com/Xenios7/Trade-executor/internal/api"
+	"github.com/Xenios7/Trade-executor/internal/service"
 )
 
 func main() {
-	h := api.NewHandler()
+	svc := service.NewOrderService(nil, nil)
+	h := api.NewHandler(svc)
 	r := api.NewRouter(h)
 
 	fmt.Println("HTTP server listening on :8080")

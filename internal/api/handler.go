@@ -5,14 +5,24 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Xenios7/Trade-executor/internal/domain"
 	"github.com/google/uuid"
 )
 
-type Handler struct {
+type OrderService interface {
+    PlaceOrder(order domain.Order) error
+    GetOrder(id string) (domain.Order, error)
+    GetAllOrders() ([]domain.Order, error)
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler struct {
+	service OrderService
+}
+
+func NewHandler(svc OrderService) *Handler {
+	return &Handler{
+		service: svc,
+	}
 }
 
 type PublishRequest struct {
@@ -30,6 +40,7 @@ type OrderResponse struct {
 	Price     float64   `json:"price"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
+	ExecutedAt  *time.Time `json:"executed_at"`
 }
 
 
@@ -41,17 +52,30 @@ func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := OrderResponse{
-		ID:        uuid.New().String(),
-		Asset:     req.Asset,
-		Side:      req.Side,
-		Quantity:  req.Quantity,
-		Price:     req.Price,
-		Status:    "PENDING",
+	order := domain.Order {
+		ID: uuid.New().String(),
+		Asset: req.Asset,
+		Side: req.Side,
+		Quantity: req.Quantity,
+		Price: req.Price,
+		Status: "PENDING",
 		CreatedAt: time.Now().UTC(),
 	}
+	
+	if err := h.service.PlaceOrder(order); err != nil {
+		http.Error(w, "failed to place order", http.StatusInternalServerError)
+		return
+	}
 
-	//Broker call
+	response := OrderResponse{
+		ID:        order.ID,
+		Asset:     order.Asset,
+		Side:      order.Side,
+		Quantity:  order.Quantity,
+		Price:     order.Price,
+		Status:    order.Status,
+		CreatedAt: order.CreatedAt,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)

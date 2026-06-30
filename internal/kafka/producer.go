@@ -1,6 +1,9 @@
 package kafka
 
+import "github.com/Xenios7/Trade-executor/internal/domain"
+
+
 type Producer interface {
-	Publish(order Order) error
+	Publish(order domain.Order) error
 }
 
