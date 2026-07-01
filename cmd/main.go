@@ -19,13 +19,27 @@ func main() {
 		panic(err)
 	}
 
+	
 	producer := kafka.NewKafkaProducer(p, "trade-orders")
 	svc := service.NewOrderService(producer, nil)
 	h := api.NewHandler(svc)
 	r := api.NewRouter(h)
 
+	//Consumer 	
+	c, err := ckafka.NewConsumer(&ckafka.ConfigMap{
+		"bootstrap.servers": "localhost:9092",
+		"group.id":          "trade-executor",
+		"auto.offset.reset": "earliest",
+	})
+	if err != nil {
+		panic(err)
+	}
+	consumer := kafka.NewKafkaConsumer(c, svc)
+	//goroutine 1: consumer polling Kafka forever (background goroutine)
+	go consumer.Start()
 	fmt.Println("HTTP server listening on :8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		fmt.Println("HTTP server error:", err)
 	}
+
 }
