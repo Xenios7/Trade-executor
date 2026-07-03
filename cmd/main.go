@@ -21,7 +21,7 @@ func main() {
 
 	
 	producer := kafka.NewKafkaProducer(p, "trade-orders")
-	svc := service.NewOrderService(producer, nil)
+	svc := service.NewOrderService(producer, nil, nil)
 	h := api.NewHandler(svc)
 	r := api.NewRouter(h)
 

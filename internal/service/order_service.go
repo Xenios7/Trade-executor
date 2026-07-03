@@ -11,20 +11,28 @@ type Producer interface {
 	Publish(order domain.Order) error
 }
 
-type Repository interface {
-	Save(domain.Order) error
-	Cache(domain.Order) error
+type Store interface {
+    Save(order domain.Order) error
+    GetByID(id string) (domain.Order, error)
+	GetAll() ([]domain.Order, error)
+}	
+
+type Cache interface {
+    Cache(order domain.Order) error
+    GetCached(id string) (domain.Order, error)
 }
 
 type OrderService struct {
 	producer Producer
-	repo Repository	
+	store Store
+	cache Cache
 }
 
-func NewOrderService(p Producer, r Repository) *OrderService {
+func NewOrderService(p Producer, s Store, c Cache) *OrderService {
 	return &OrderService{
 		producer: p,
-		repo: r,
+		store: s,
+		cache: c,
 	}
 }
 //PlaceOrder
@@ -52,23 +60,37 @@ func (s *OrderService) ProcessOrder(order domain.Order) error {
     order.ExecutedAt = &now
 
     // persist and cache
-	if s.repo != nil {
-		if err := s.repo.Save(order); err != nil {
-			return err
-		}
-		if err := s.repo.Cache(order); err != nil {
+	if s.store != nil {
+		if err := s.store.Save(order); err != nil {
 			return err
 		}
 	}
-
+	if s.cache != nil {
+		if err := s.cache.Cache(order); err != nil {
+			return err
+		}
+	}
     return nil
 }
 
-// Stubs for now 
 func (s *OrderService) GetOrder(id string) (domain.Order, error) {
-	return domain.Order{}, nil
+    // Check Redis first
+    if s.cache != nil {
+        order, err := s.cache.GetCached(id)
+        if err == nil {
+            return order, nil
+        }
+    }
+    // Fall back to Postgres
+    if s.store != nil {
+        return s.store.GetByID(id)
+    }
+    return domain.Order{}, nil
 }
 
 func (s *OrderService) GetAllOrders() ([]domain.Order, error) {
-	return []domain.Order{}, nil
-}	
+    if s.store != nil {
+        return s.store.GetAll()
+    }
+    return []domain.Order{}, nil
+}
