@@ -29,7 +29,7 @@ Go, Apache Kafka, Redis, PostgreSQL, Docker, AWS ECS
 | M3 | Kafka consumer — process orders asynchronously, update status | ✅ Complete |
 | M4 | Redis caching — cache full order state for fast lookups | ✅ Complete |
 | M5 | PostgreSQL persistence — persist all orders and execution results | ✅ Complete |
-| M6 | Docker Compose — run full stack locally | 🔄 In Progress |
+| M6 | Docker Compose — run full stack locally | ✅ Complete |
 | M7 | AWS ECS deployment — deploy containerized service to AWS | ⬜ Not Started |
 
 ## Order Flow
