@@ -84,9 +84,30 @@ func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetAllOrdersHandler(w http.ResponseWriter, r *http.Request) {
 
-	//kafka producer call
+
+	orders, err := h.service.GetAllOrders()
+	if err != nil {
+		http.Error(w, "orders not found!", http.StatusNotFound)
+		return
+	}
+
+	response := []OrderResponse{}
+	for _, order := range orders {
+		response = append(response, OrderResponse{
+			ID:        order.ID,
+			Asset:     order.Asset,
+			Side:      order.Side,
+			Quantity:  order.Quantity,
+			Price:     order.Price,
+			Status:    order.Status,
+			CreatedAt: order.CreatedAt,
+			ExecutedAt: order.ExecutedAt,
+		})
+	}
+	
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode([]OrderResponse{})
+	json.NewEncoder(w).Encode(response)
 }
 
 func (h *Handler) GetOrderHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,9 +118,22 @@ func (h *Handler) GetOrderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
+	order, err := h.service.GetOrder(id)
+	if err != nil {
+		http.Error(w, "order not found!", http.StatusNotFound)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(OrderResponse{})
+	json.NewEncoder(w).Encode(OrderResponse{
+		ID:        order.ID,
+		Asset:     order.Asset,
+		Side:      order.Side,
+		Quantity:  order.Quantity,
+		Price:     order.Price,
+		Status:    order.Status,
+		CreatedAt: order.CreatedAt,
+		ExecutedAt: order.ExecutedAt,
+	})
 }
 
