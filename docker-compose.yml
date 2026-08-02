@@ -45,3 +45,4 @@ services:
       KAFKA_BROKER: kafka:9092
       POSTGRES_DSN: postgres://trader:password@postgres:5432/tradedb?sslmode=disable
       REDIS_ADDR: redis:6379
+    restart: on-failure
