@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"context"
+	"time"
 
 	"github.com/Xenios7/Trade-executor/internal/api"
 	"github.com/Xenios7/Trade-executor/internal/kafka"
@@ -62,9 +64,34 @@ func main() {
 	store := repository.NewPostgresRepository(db)
 	cache := repository.NewRedisRepository(redisClient)
 
+	// 3.5 Ensure Kafka topic exists
+	adminClient, err := ckafka.NewAdminClient(&ckafka.ConfigMap{
+		"bootstrap.servers": kafkaBroker,
+		"security.protocol": "ssl",
+	})
+	if err != nil {
+		panic(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	results, err := adminClient.CreateTopics(ctx, []ckafka.TopicSpecification{
+		{Topic: "trade-orders", NumPartitions: 3, ReplicationFactor: 3},
+	})
+	cancel()
+	if err != nil {
+		panic(err)
+	}
+	for _, result := range results {
+		if result.Error.Code() != ckafka.ErrNoError && result.Error.Code() != ckafka.ErrTopicAlreadyExists {
+			panic(fmt.Sprintf("failed to create topic %s: %v", result.Topic, result.Error))
+		}
+	}
+	adminClient.Close()
+	fmt.Println("Kafka topic 'trade-orders' ready")
+
 	// 4. Kafka producer
 	p, err := ckafka.NewProducer(&ckafka.ConfigMap{
 		"bootstrap.servers": kafkaBroker,
+		"security.protocol": "ssl",
 	})
 	if err != nil {
 		panic(err)
@@ -81,6 +108,7 @@ func main() {
 		"bootstrap.servers": kafkaBroker,
 		"group.id":          "trade-executor",
 		"auto.offset.reset": "earliest",
+		"security.protocol": "ssl",
 	})
 	if err != nil {
 		panic(err)
