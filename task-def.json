@@ -18,8 +18,7 @@
       "environment": [
         {"name": "POSTGRES_DSN", "value": "postgres://trader:trader123@trade-executor-db.cz648o4osyxr.eu-central-1.rds.amazonaws.com:5432/tradedb?sslmode=require"},
         {"name": "REDIS_ADDR", "value": "trade-executor-redis.df5uvi.0001.euc1.cache.amazonaws.com:6379"},
-        {"name": "KAFKA_BROKER", "value": "PLACEHOLDER_UNTIL_MSK_STEP"}
-      ],
+        {"name": "KAFKA_BROKER", "value": "b-2.tradeexecutormsk.24apww.c9.kafka.eu-central-1.amazonaws.com:9094,b-1.tradeexecutormsk.24apww.c9.kafka.eu-central-1.amazonaws.com:9094,b-3.tradeexecutormsk.24apww.c9.kafka.eu-central-1.amazonaws.com:9094"}      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
