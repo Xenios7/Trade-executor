@@ -30,7 +30,7 @@ Go, Apache Kafka, Redis, PostgreSQL, Docker, AWS ECS
 | M4 | Redis caching — cache full order state for fast lookups | ✅ Complete |
 | M5 | PostgreSQL persistence — persist all orders and execution results | ✅ Complete |
 | M6 | Docker Compose — run full stack locally | ✅ Complete |
-| M7 | AWS ECS deployment — deploy containerized service to AWS | ⬜ Not Started |
+| M7 | AWS ECS deployment — deploy containerized service to AWS | ✅ Complete |
 
 ## Order Flow
 
@@ -42,6 +42,14 @@ PENDING → FILLED
 ```
 
 A new order is stored as `PENDING`. The Kafka consumer processes it and updates the status to `FILLED` or `REJECTED` based on order size. The result is persisted to PostgreSQL and cached in Redis.
+
+## Deployment Status (M7)
+
+M7 is fully complete and verified end-to-end on AWS. Full infrastructure was provisioned and tested live: VPC, security groups, RDS (PostgreSQL), ElastiCache (Redis), ECS Fargate, ALB, IAM roles, task definitions, and a 3-broker Amazon MSK cluster (TLS on port 9094).
+
+A real order was submitted through the ALB, produced to MSK over TLS, consumed by the Go consumer group, executed, and persisted to RDS — confirmed `FILLED` via the API. The full event-driven pipeline runs exactly as designed, in the cloud, with real managed Kafka.
+
+Infrastructure was torn down after verification to avoid ongoing cost, since this is a portfolio project with no production traffic — task definitions, Dockerfile, and IaC configs remain in the repo and can be redeployed on demand.
 
 ## API Endpoints
 
