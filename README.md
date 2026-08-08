@@ -30,7 +30,13 @@ Go, Apache Kafka, Redis, PostgreSQL, Docker, AWS ECS
 | M4 | Redis caching — cache full order state for fast lookups | ✅ Complete |
 | M5 | PostgreSQL persistence — persist all orders and execution results | ✅ Complete |
 | M6 | Docker Compose — run full stack locally | ✅ Complete |
-| M7 | AWS ECS deployment — deploy containerized service to AWS | ✅ Complete |
+| M7 | AWS ECS deployment — deploy containerized service to AWS | 🟨 Infra complete, Kafka blocked (see note) |
+
+## Deployment Status (M7)
+
+The full AWS infrastructure for M7 is provisioned and verified end-to-end: VPC, security groups, RDS (PostgreSQL), ElastiCache (Redis), ECS Fargate cluster, ALB, IAM roles, and task definitions are all live and confirmed working, a request through the ALB successfully reaches the ECS task, which writes to RDS.
+
+The one remaining piece, a managed Kafka broker (Amazon MSK), is currently blocked by an AWS account-tier restriction (`SubscriptionRequiredException`, Free Plan accounts have limited access to certain services, including MSK) rather than any code or architecture issue. The MSK security group and networking are already configured and ready; only the broker itself needs provisioning once the account restriction is lifted.
 
 ## Order Flow
 
