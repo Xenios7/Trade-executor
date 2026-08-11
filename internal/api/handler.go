@@ -26,6 +26,7 @@ func NewHandler(svc OrderService) *Handler {
 }
 
 type PublishRequest struct {
+	AccountID string  `json:"account_id"`
 	Asset    string  `json:"asset"`
 	Side     string  `json:"side"`
 	Quantity float64 `json:"quantity"`
@@ -34,6 +35,7 @@ type PublishRequest struct {
 
 type OrderResponse struct {
 	ID        string    `json:"id"`
+	AccountID string  `json:"account_id"`
 	Asset     string    `json:"asset"`
 	Side      string    `json:"side"`
 	Quantity  float64   `json:"quantity"`
@@ -51,9 +53,15 @@ func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
+	
+	if req.AccountID == "" {
+		http.Error(w, "account_id is required", http.StatusBadRequest)
+		return
+	}
 
 	order := domain.Order {
 		ID: uuid.New().String(),
+		AccountID: req.AccountID,
 		Asset: req.Asset,
 		Side: req.Side,
 		Quantity: req.Quantity,
@@ -69,6 +77,7 @@ func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := OrderResponse{
 		ID:        order.ID,
+		AccountID:  order.AccountID,
 		Asset:     order.Asset,
 		Side:      order.Side,
 		Quantity:  order.Quantity,
@@ -95,6 +104,7 @@ func (h *Handler) GetAllOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, order := range orders {
 		response = append(response, OrderResponse{
 			ID:        order.ID,
+			AccountID:  order.AccountID,
 			Asset:     order.Asset,
 			Side:      order.Side,
 			Quantity:  order.Quantity,
@@ -127,6 +137,7 @@ func (h *Handler) GetOrderHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(OrderResponse{
 		ID:        order.ID,
+		AccountID:  order.AccountID,
 		Asset:     order.Asset,
 		Side:      order.Side,
 		Quantity:  order.Quantity,

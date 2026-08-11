@@ -67,14 +67,16 @@ func main() {
 	// 3.5 Ensure Kafka topic exists
 	adminClient, err := ckafka.NewAdminClient(&ckafka.ConfigMap{
 		"bootstrap.servers": kafkaBroker,
-		"security.protocol": "ssl",
+		// "security.protocol": "ssl", Local development uses PLAINTEXT; production would use TLS/SASL.
+		"security.protocol": "plaintext",
 	})
 	if err != nil {
 		panic(err)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	results, err := adminClient.CreateTopics(ctx, []ckafka.TopicSpecification{
-		{Topic: "trade-orders", NumPartitions: 3, ReplicationFactor: 3},
+		// {Topic: "trade-orders", NumPartitions: 3, ReplicationFactor: 3}, For AWS or production-style Kafka setup
+		{Topic: "trade-orders", NumPartitions: 3, ReplicationFactor: 1}, 
 	})
 	cancel()
 	if err != nil {
@@ -91,7 +93,8 @@ func main() {
 	// 4. Kafka producer
 	p, err := ckafka.NewProducer(&ckafka.ConfigMap{
 		"bootstrap.servers": kafkaBroker,
-		"security.protocol": "ssl",
+		// "security.protocol": "ssl",
+		"security.protocol": "plaintext",
 	})
 	if err != nil {
 		panic(err)
@@ -108,7 +111,8 @@ func main() {
 		"bootstrap.servers": kafkaBroker,
 		"group.id":          "trade-executor",
 		"auto.offset.reset": "earliest",
-		"security.protocol": "ssl",
+		// "security.protocol": "ssl",
+		"security.protocol": "plaintext",
 	})
 	if err != nil {
 		panic(err)

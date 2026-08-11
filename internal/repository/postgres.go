@@ -16,13 +16,14 @@ func NewPostgresRepository(p *sql.DB) *PostgresRepository {
 		db: p,
 	}
 }
-
+    
 func (p *PostgresRepository) Save(order domain.Order) error {
     _, err := p.db.ExecContext(
         context.Background(),
-        `INSERT INTO orders (id, asset, side, quantity, price, status, created_at, executed_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        `INSERT INTO orders (id, account_id, asset, side, quantity, price, status, created_at, executed_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         order.ID,
+        order.AccountID,
         order.Asset,
         order.Side,
         order.Quantity,
@@ -44,6 +45,7 @@ func (p *PostgresRepository) GetByID(id string) (domain.Order, error) {
     )
     err := row.Scan(
         &order.ID,
+    	&order.AccountID,
         &order.Asset,
         &order.Side,
         &order.Quantity,
@@ -59,8 +61,8 @@ func (p *PostgresRepository) GetAll() ([]domain.Order, error) {
     // Query all rows from the orders table
     rows, err := p.db.QueryContext(
         context.Background(),
-        `SELECT id, asset, side, quantity, price, status, created_at, executed_at 
-         FROM orders`,
+            `SELECT id, account_id, asset, side, quantity, price, status, created_at, executed_at
+            FROM orders`,
     )
     if err != nil {
         return nil, err
@@ -75,6 +77,7 @@ func (p *PostgresRepository) GetAll() ([]domain.Order, error) {
         // Scan maps each column value into the corresponding struct field
         if err := rows.Scan(
             &order.ID,
+        	&order.AccountID,
             &order.Asset,
             &order.Side,
             &order.Quantity,

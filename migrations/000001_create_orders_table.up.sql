@@ -1,13 +1,11 @@
-CREATE TABLE IF NOT EXISTS orders (
-    id VARCHAR(36) PRIMARY KEY,
-    asset VARCHAR(20) NOT NULL,
-    side VARCHAR(4) NOT NULL,
-    quantity DECIMAL(18,8) NOT NULL,
-    price DECIMAL(18,2) NOT NULL,
-    status VARCHAR(10) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    executed_at TIMESTAMP
+CREATE TABLE orders (
+    id VARCHAR(100) PRIMARY KEY,
+    account_id VARCHAR(100) NOT NULL,
+    asset VARCHAR(100) NOT NULL,
+    side VARCHAR(20) NOT NULL,
+    quantity DOUBLE PRECISION NOT NULL,
+    price DOUBLE PRECISION NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    executed_at TIMESTAMP WITH TIME ZONE
 );
-
-
-
